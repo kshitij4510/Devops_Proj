@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriRent | Dockerized Farm Equipment Rental System</title>
+    <meta name="description" content="Cloud-native, containerized agricultural machinery rental system connecting farmers with equipment owners.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="app.css">
+</head>
+<body>
+    <!-- Top Navigation Header -->
+    <header class="app-header" id="app-header">
+        <div class="header-container">
+            <div class="logo-area">
+                <span class="logo-icon">🚜</span>
+                <div class="logo-text">
+                    <h1>AgriRent</h1>
+                    <span class="badge-env">Dockerized MVP v1.0.0</span>
+                </div>
+            </div>
+
+            <!-- Role Switcher -->
+            <div class="role-selector-wrap">
+                <label for="role-select">Active Role:</label>
+                <select id="role-select" class="role-select" onchange="changeRole()">
+                    <option value="FARMER" selected>🌾 Farmer (Lessee)</option>
+                    <option value="OWNER">🚜 Equipment Owner (Lessor)</option>
+                    <option value="ADMIN">🛡️ Platform Admin</option>
+                </select>
+            </div>
+
+            <div class="header-actions">
+                <button class="btn btn-primary" id="btn-open-add-equipment" onclick="openAddEquipmentModal()">
+                    <span>➕</span> Add Equipment
+                </button>
+                <div class="system-status-indicator" title="Service UP on Port 8085">
+                    <span class="status-dot"></span> Live
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-content" id="main-content">
+        <!-- Live Dashboard KPIs -->
+        <section class="dashboard-section" id="dashboard-section">
+            <div class="section-header">
+                <h2>Operational Analytics & Dashboard</h2>
+                <span class="subtext">Real-time equipment utilization and rental performance metrics</span>
+            </div>
+            <div class="kpi-grid">
+                <div class="kpi-card" id="kpi-total-equipment">
+                    <div class="kpi-icon">🚜</div>
+                    <div class="kpi-body">
+                        <span class="kpi-label">Total Equipment</span>
+                        <div class="kpi-value" id="stat-total-equipment">--</div>
+                    </div>
+                </div>
+
+                <div class="kpi-card" id="kpi-available-equipment">
+                    <div class="kpi-icon">✅</div>
+                    <div class="kpi-body">
+                        <span class="kpi-label">Available for Rent</span>
+                        <div class="kpi-value highlight-green" id="stat-available-equipment">--</div>
+                    </div>
+                </div>
+
+                <div class="kpi-card" id="kpi-active-rentals">
+                    <div class="kpi-icon">⏳</div>
+                    <div class="kpi-body">
+                        <span class="kpi-label">Active / In-Use</span>
+                        <div class="kpi-value highlight-yellow" id="stat-active-rentals">--</div>
+                    </div>
+                </div>
+
+                <div class="kpi-card" id="kpi-total-revenue">
+                    <div class="kpi-icon">💰</div>
+                    <div class="kpi-body">
+                        <span class="kpi-label">Total Revenue</span>
+                        <div class="kpi-value highlight-gold" id="stat-total-revenue">₹0</div>
+                    </div>
+                </div>
+
+                <div class="kpi-card" id="kpi-utilization-rate">
+                    <div class="kpi-icon">📈</div>
+                    <div class="kpi-body">
+                        <span class="kpi-label">Fleet Utilization</span>
+                        <div class="kpi-value" id="stat-utilization-rate">0%</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Search and Filter Bar -->
+        <section class="controls-section" id="controls-section">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="search-input" placeholder="Search by machinery name, location, or specs..." onkeyup="handleSearch()">
+            </div>
+
+            <div class="filter-controls">
+                <select id="category-filter" onchange="handleFilter()">
+                    <option value="">All Categories</option>
+                    <option value="TRACTOR">Tractors</option>
+                    <option value="COMBINE_HARVESTER">Combine Harvesters</option>
+                    <option value="ROTAVATOR">Rotavators</option>
+                    <option value="SEED_DRILL">Seed Drills</option>
+                    <option value="BOOM_SPRAYER">Boom Sprayers</option>
+                </select>
+
+                <select id="status-filter" onchange="handleFilter()">
+                    <option value="">All Statuses</option>
+                    <option value="AVAILABLE">Available</option>
+                    <option value="RESERVED">Reserved</option>
+                    <option value="RENTED">Rented</option>
+                    <option value="MAINTENANCE">Maintenance</option>
+                </select>
+
+                <button class="btn btn-secondary" id="btn-reset-filters" onclick="resetFilters()">Reset Filters</button>
+            </div>
+        </section>
+
+        <!-- Tabs Navigation -->
+        <div class="tabs-nav" id="tabs-nav">
+            <button class="tab-btn active" id="tab-equipment" onclick="switchTab('equipment')">🚜 Equipment Catalog</button>
+            <button class="tab-btn" id="tab-rentals" onclick="switchTab('rentals')">📋 Rental Requests & Workflow <span class="badge-count" id="pending-count">0</span></button>
+        </div>
+
+        <!-- Equipment Catalog View -->
+        <section class="tab-pane active" id="pane-equipment">
+            <div class="equipment-grid" id="equipment-container">
+                <!-- Dynamically populated via app.js -->
+            </div>
+        </section>
+
+        <!-- Rentals View -->
+        <section class="tab-pane" id="pane-rentals">
+            <div class="table-responsive">
+                <table class="data-table" id="rentals-table">
+                    <thead>
+                        <tr>
+                            <th>Booking ID</th>
+                            <th>Equipment</th>
+                            <th>Farmer (Lessee)</th>
+                            <th>Contact</th>
+                            <th>Field Location</th>
+                            <th>Duration</th>
+                            <th>Total Cost</th>
+                            <th>Status</th>
+                            <th>Workflow Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rentals-tbody">
+                        <!-- Dynamically populated via app.js -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal: Add Equipment -->
+    <div class="modal" id="modal-add-equipment">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3>Register Agricultural Equipment</h3>
+                <button class="close-btn" onclick="closeModal('modal-add-equipment')">&times;</button>
+            </div>
+            <form id="form-add-equipment" onsubmit="submitAddEquipment(event)">
+                <div class="form-group">
+                    <label for="input-eq-name">Equipment Name / Model *</label>
+                    <input type="text" id="input-eq-name" required placeholder="e.g. John Deere 5050D Tractor">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="input-eq-category">Category *</label>
+                        <select id="input-eq-category" required>
+                            <option value="TRACTOR">TRACTOR</option>
+                            <option value="COMBINE_HARVESTER">COMBINE_HARVESTER</option>
+                            <option value="ROTAVATOR">ROTAVATOR</option>
+                            <option value="SEED_DRILL">SEED_DRILL</option>
+                            <option value="BOOM_SPRAYER">BOOM_SPRAYER</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="input-eq-location">Location / Depot *</label>
+                        <input type="text" id="input-eq-location" required placeholder="e.g. Nashik Central Yard">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="input-eq-daily-rate">Daily Rate (₹) *</label>
+                        <input type="number" id="input-eq-daily-rate" required min="100" placeholder="2500">
+                    </div>
+                    <div class="form-group">
+                        <label for="input-eq-hourly-rate">Hourly Rate (₹) *</label>
+                        <input type="number" id="input-eq-hourly-rate" required min="20" placeholder="350">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="input-eq-owner-name">Owner Name *</label>
+                        <input type="text" id="input-eq-owner-name" required placeholder="e.g. Gurpreet Singh">
+                    </div>
+                    <div class="form-group">
+                        <label for="input-eq-owner-contact">Contact Phone *</label>
+                        <input type="text" id="input-eq-owner-contact" required placeholder="+91 98220 11223">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="input-eq-description">Description & Capabilities</label>
+                    <textarea id="input-eq-description" rows="2" placeholder="e.g. 50 HP tractor suitable for plowing, haulage and sowing."></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('modal-add-equipment')">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="btn-save-equipment">Save & Register</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Book Rental -->
+    <div class="modal" id="modal-book-rental">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3>Reserve Agricultural Machinery</h3>
+                <button class="close-btn" onclick="closeModal('modal-book-rental')">&times;</button>
+            </div>
+            <form id="form-book-rental" onsubmit="submitBookRental(event)">
+                <input type="hidden" id="book-eq-id">
+                <div class="booking-summary-banner">
+                    <strong id="book-eq-name">Selected Equipment</strong>
+                    <span id="book-eq-rate">Rate: ₹0 / day</span>
+                </div>
+                <div class="form-group">
+                    <label for="input-renter-name">Farmer (Lessee) Name *</label>
+                    <input type="text" id="input-renter-name" required placeholder="e.g. Ramesh Patel">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="input-renter-contact">Contact Phone *</label>
+                        <input type="text" id="input-renter-contact" required placeholder="+91 98765 43210">
+                    </div>
+                    <div class="form-group">
+                        <label for="input-farm-location">Farm Field Location *</label>
+                        <input type="text" id="input-farm-location" required placeholder="e.g. Dindori Block 4">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="input-rental-start">Start Date *</label>
+                        <input type="date" id="input-rental-start" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="input-rental-days">Duration (Days) *</label>
+                        <input type="number" id="input-rental-days" required min="1" max="60" value="2" onchange="calculateRentalTotal()">
+                    </div>
+                </div>
+                <div class="cost-preview-box">
+                    <span>Estimated Total Rental Cost:</span>
+                    <strong id="book-estimated-cost">₹0</strong>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('modal-book-rental')">Cancel</button>
+                    <button type="submit" class="btn btn-success" id="btn-confirm-booking">Submit Reservation</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Alert / Toast Container -->
+    <div id="toast" class="toast"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
