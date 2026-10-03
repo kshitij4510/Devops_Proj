@@ -1,0 +1,15 @@
+# Docker Ignore file
+target/
+!target/*.jar
+.git
+.gitignore
+.idea/
+*.iml
+.mvn/wrapper/maven-wrapper.jar
+docs/
+jenkins/
+jenkins-ci-build.log
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
