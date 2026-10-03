@@ -69,8 +69,13 @@ pipeline {
                         Start-Sleep -Seconds 2
                     }
 
+                    Write-Host "Staging executable JAR to deploy/ directory to prevent target workspace locks..."
+                    $deployDir = "C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\Farm-Equipment-Rental-Pipeline\\deploy"
+                    if (-not (Test-Path $deployDir)) { New-Item -ItemType Directory -Path $deployDir -Force }
+                    Copy-Item "target\\farm-equipment-rental-1.0.0.jar" "$deployDir\\farm-equipment-rental.jar" -Force
+                    $jarPath = "$deployDir\\farm-equipment-rental.jar"
+
                     Write-Host "Launching Farm Equipment Rental System executable JAR on port $port with profile $profile..."
-                    $jarPath = (Get-Item "target\\farm-equipment-rental-1.0.0.jar").FullName
                     $cmd = "`"C:\\Program Files\\Java\\jdk-21.0.12\\bin\\java.exe`" -jar `"$jarPath`" --server.port=$port --spring.profiles.active=$profile"
                     $procRes = Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{ CommandLine = $cmd }
                     Write-Host "Launched detached process PID: $($procRes.ProcessId) ReturnValue: $($procRes.ReturnValue)"
