@@ -1,0 +1,251 @@
+﻿Started by user unknown or anonymous
+Obtained Jenkinsfile from git file:///C:/Users/Administrator/Documents/Devops_Proj
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins in C:\ProgramData\Jenkins\.jenkins\workspace\Farm-Equipment-Rental-Pipeline
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+No credentials specified
+ > git.exe rev-parse --resolve-git-dir C:\ProgramData\Jenkins\.jenkins\workspace\Farm-Equipment-Rental-Pipeline\.git # timeout=10
+Fetching changes from the remote Git repository
+ > git.exe config remote.origin.url file:///C:/Users/Administrator/Documents/Devops_Proj # timeout=10
+Fetching upstream changes from file:///C:/Users/Administrator/Documents/Devops_Proj
+ > git.exe --version # timeout=10
+ > git --version # 'git version 2.54.0.windows.1'
+ > git.exe fetch --tags --force --progress -- file:///C:/Users/Administrator/Documents/Devops_Proj +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git.exe rev-parse "refs/remotes/origin/main^{commit}" # timeout=10
+Checking out Revision 02776e1f0f97c0ce34e20ff763b45e284e593835 (refs/remotes/origin/main)
+ > git.exe config core.sparsecheckout # timeout=10
+ > git.exe checkout -f 02776e1f0f97c0ce34e20ff763b45e284e593835 # timeout=10
+Commit message: "ci(deploy): isolate deployment jar to deploy/ folder to prevent file locking"
+ > git.exe rev-list --no-walk c87516d67a99d12b4f4d019b1358c3426431b390 # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Checkout SCM)
+[Pipeline] echo
+=== Stage 1: Checkout Source Code from Repository ===
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+No credentials specified
+ > git.exe rev-parse --resolve-git-dir C:\ProgramData\Jenkins\.jenkins\workspace\Farm-Equipment-Rental-Pipeline\.git # timeout=10
+Fetching changes from the remote Git repository
+ > git.exe config remote.origin.url file:///C:/Users/Administrator/Documents/Devops_Proj # timeout=10
+Fetching upstream changes from file:///C:/Users/Administrator/Documents/Devops_Proj
+ > git.exe --version # timeout=10
+ > git --version # 'git version 2.54.0.windows.1'
+ > git.exe fetch --tags --force --progress -- file:///C:/Users/Administrator/Documents/Devops_Proj +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git.exe rev-parse "refs/remotes/origin/main^{commit}" # timeout=10
+Checking out Revision 02776e1f0f97c0ce34e20ff763b45e284e593835 (refs/remotes/origin/main)
+ > git.exe config core.sparsecheckout # timeout=10
+ > git.exe checkout -f 02776e1f0f97c0ce34e20ff763b45e284e593835 # timeout=10
+Commit message: "ci(deploy): isolate deployment jar to deploy/ folder to prevent file locking"
+[Pipeline] script
+[Pipeline] {
+[Pipeline] echo
+Branch: origin/main
+[Pipeline] echo
+Commit: 02776e1f0f97c0ce34e20ff763b45e284e593835
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build & Compile)
+[Pipeline] echo
+=== Stage 2: Compiling Java 21 Source with Maven ===
+[Pipeline] bat
+
+C:\ProgramData\Jenkins\.jenkins\workspace\Farm-Equipment-Rental-Pipeline>call "C:\DevTools\apache-maven-3.9.16\bin\mvn.cmd" clean compile 
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -----------------< com.agrirent:farm-equipment-rental >-----------------
+[INFO] Building Farm Equipment Rental System 1.0.0
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.3.2:clean (default-clean) @ farm-equipment-rental ---
+[INFO] Deleting C:\ProgramData\Jenkins\.jenkins\workspace\Farm-Equipment-Rental-Pipeline\target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ farm-equipment-rental ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 3 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ farm-equipment-rental ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 16 source files with javac [debug parameters release 21] to target\classes
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  3.268 s
+[INFO] Finished at: 2026-10-04T02:10:10+05:30
+[INFO] ------------------------------------------------------------------------
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Automated Tests & Quality Gate)
+[Pipeline] echo
+=== Stage 3: Executing Unit, Integration & Selenium Tests ===
+[Pipeline] bat
+
+C:\ProgramData\Jenkins\.jenkins\workspace\Farm-Equipment-Rental-Pipeline>call "C:\DevTools\apache-maven-3.9.16\bin\mvn.cmd" test 
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -----------------< com.agrirent:farm-equipment-rental >-----------------
+[INFO] Building Farm Equipment Rental System 1.0.0
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ farm-equipment-rental ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 3 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ farm-equipment-rental ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ farm-equipment-rental ---
+[INFO] skip non existing resourceDirectory C:\ProgramData\Jenkins\.jenkins\workspace\Farm-Equipment-Rental-Pipeline\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ farm-equipment-rental ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 4 source files with javac [debug parameters release 21] to target\test-classes
+[INFO] 
+[INFO] --- surefire:3.2.5:test (default-test) @ farm-equipment-rental ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running com.agrirent.EquipmentServiceTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.060 s -- in com.agrirent.EquipmentServiceTest
+[INFO] Running com.agrirent.RentalWorkflowServiceTest
+[ERROR] Tests run: 5, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.042 s <<< FAILURE! -- in com.agrirent.RentalWorkflowServiceTest
+[ERROR] com.agrirent.RentalWorkflowServiceTest.testCreateRentalRequest -- Time elapsed: 0.026 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <10000.0> but was: <0.0>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
+	at org.junit.jupiter.api.AssertEquals.failNotEqual(AssertEquals.java:197)
+	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:182)
+	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:177)
+	at org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:898)
+	at com.agrirent.RentalWorkflowServiceTest.testCreateRentalRequest(RentalWorkflowServiceTest.java:47)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+
+[INFO] Running com.agrirent.selenium.FarmEquipmentRentalSeleniumTest
+02:10:18.743 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.agrirent.selenium.FarmEquipmentRentalSeleniumTest]: FarmEquipmentRentalSeleniumTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+02:10:18.972 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.agrirent.AgriRentApplication for test class com.agrirent.selenium.FarmEquipmentRentalSeleniumTest
+02:10:20.841 [main] INFO io.github.bonigarcia.wdm.WebDriverManager -- Using chromedriver 154.0.8037.92 (resolved driver for Chrome 154)
+02:10:20.927 [main] INFO io.github.bonigarcia.wdm.online.Downloader -- Downloading https://storage.googleapis.com/chrome-for-testing-public/154.0.8037.92/win64/chromedriver-win64.zip
+02:10:29.124 [main] INFO io.github.bonigarcia.wdm.online.Downloader -- Extracting driver from compressed file chromedriver-win64.zip
+02:10:29.384 [main] INFO io.github.bonigarcia.wdm.WebDriverManager -- Exporting webdriver.chrome.driver as C:\Windows\system32\config\systemprofile\.cache\selenium\chromedriver\win64\154.0.8037.92\chromedriver.exe
+Oct 04, 2026 2:10:31 AM org.openqa.selenium.devtools.CdpVersionFinder findNearestMatch
+WARNING: Unable to find CDP implementation matching 154
+Oct 04, 2026 2:10:31 AM org.openqa.selenium.chromium.ChromiumDriver lambda$new$5
+WARNING: Unable to find version of CDP to use for 154.0.8037.93. You may need to include a dependency on a specific version of the CDP using something similar to `org.seleniumhq.selenium:selenium-devtools-v86:4.25.0` where the version ("v86") matches the version of the chromium-based browser you're using and the version number of the artifact is the same as Selenium's.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.3.4)
+
+2026-10-04 02:10:32.167 [main] INFO  c.a.s.FarmEquipmentRentalSeleniumTest - Starting FarmEquipmentRentalSeleniumTest using Java 21.0.12 with PID 14440 (started by DESKTOP-90OOIO4$ in C:\ProgramData\Jenkins\.jenkins\workspace\Farm-Equipment-Rental-Pipeline)
+2026-10-04 02:10:32.169 [main] INFO  c.a.s.FarmEquipmentRentalSeleniumTest - No active profile set, falling back to 1 default profile: "default"
+2026-10-04 02:10:34.202 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 0 (http)
+2026-10-04 02:10:34.218 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-10-04 02:10:34.218 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.30]
+2026-10-04 02:10:34.309 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2026-10-04 02:10:34.320 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 2109 ms
+2026-10-04 02:10:34.625 [main] INFO  o.s.b.a.w.s.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
+2026-10-04 02:10:35.082 [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 3 endpoints beneath base path '/actuator'
+2026-10-04 02:10:35.156 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 59042 (http) with context path '/'
+2026-10-04 02:10:35.179 [main] INFO  c.a.s.FarmEquipmentRentalSeleniumTest - Started FarmEquipmentRentalSeleniumTest in 3.775 seconds (process running for 17.505)
+Java HotSpot(TM) 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+WARNING: A Java agent has been loaded dynamically (C:\Windows\system32\config\systemprofile\.m2\repository\net\bytebuddy\byte-buddy-agent\1.14.19\byte-buddy-agent-1.14.19.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+2026-10-04 02:10:36.193 [http-nio-auto-1-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-10-04 02:10:36.193 [http-nio-auto-1-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-10-04 02:10:36.194 [http-nio-auto-1-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 1 ms
+[SELENIUM SCREENSHOT] -> C:\ProgramData\Jenkins\.jenkins\workspace\Farm-Equipment-Rental-Pipeline\target\screenshots\UJ1_Browse_Search_Success.png
+[SELENIUM SCREENSHOT] -> C:\ProgramData\Jenkins\.jenkins\workspace\Farm-Equipment-Rental-Pipeline\target\screenshots\UJ2_Register_Equipment_Success.png
+[SELENIUM SCREENSHOT] -> C:\ProgramData\Jenkins\.jenkins\workspace\Farm-Equipment-Rental-Pipeline\target\screenshots\UJ3_Rental_Reservation_Success.png
+[SELENIUM SCREENSHOT] -> C:\ProgramData\Jenkins\.jenkins\workspace\Farm-Equipment-Rental-Pipeline\target\screenshots\UJ4_Workflow_Transitions_Success.png
+[SELENIUM SCREENSHOT] -> C:\ProgramData\Jenkins\.jenkins\workspace\Farm-Equipment-Rental-Pipeline\target\screenshots\UJ5_Demonstrated_Failure_Screenshot_Mechanism.png
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 25.26 s -- in com.agrirent.selenium.FarmEquipmentRentalSeleniumTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[ERROR] Failures: 
+[ERROR]   RentalWorkflowServiceTest.testCreateRentalRequest:47 expected: <10000.0> but was: <0.0>
+[INFO] 
+[ERROR] Tests run: 16, Failures: 1, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  31.097 s
+[INFO] Finished at: 2026-10-04T02:10:44+05:30
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.2.5:test (default-test) on project farm-equipment-rental: There are test failures.
+[ERROR] 
+[ERROR] Please refer to C:\ProgramData\Jenkins\.jenkins\workspace\Farm-Equipment-Rental-Pipeline\target\surefire-reports for the individual test results.
+[ERROR] Please refer to dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
+Post stage
+[Pipeline] junit
+Recording test results
+[Checks API] No suitable checks publisher found.
+[Pipeline] archiveArtifacts
+Archiving artifacts
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Package Artifact)
+Stage "Package Artifact" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Deploy to Embedded Tomcat Server)
+Stage "Deploy to Embedded Tomcat Server" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] echo
+PIPELINE FAILED: Check stage logs for details.
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+ERROR: script returned exit code 1
+Finished: FAILURE
+

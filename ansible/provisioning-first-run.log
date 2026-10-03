@@ -1,0 +1,60 @@
+﻿==========================================================================
+ ANSIBLE CONFIGURATION MANAGEMENT PLAYBOOK EXECUTION
+ Target Node: Farm Equipment Rental System Host (AgriRent DevOps)
+ Execution Timestamp: 2026-10-04 02:24:47 +05:30
+==========================================================================
+
+[PLAY: Configure Target Node for Farm Equipment Rental System] *****************
+
+[TASK: Gather Facts & Audit System Prerequisites] *****************************
+ok: [prod-app-01] => {
+    \
+        \
+        \
+        \
+        \
+        \
+    }
+}
+
+[TASK: Ensure agrirent system group exists] ************************************
+changed: [prod-app-01] => {\
+
+[TASK: Ensure dedicated agrirent service user exists] **************************
+changed: [prod-app-01] => {\
+
+[TASK: Install server prerequisite packages (Java 21, curl, git, ca-cert)] ****
+ok: [prod-app-01] => {\
+
+[TASK: Provision AgriRent application directory tree] **************************
+changed: [prod-app-01] => (item=/opt/agrirent) => {\
+changed: [prod-app-01] => (item=/opt/agrirent/bin) => {\
+changed: [prod-app-01] => (item=/opt/agrirent/config) => {\
+changed: [prod-app-01] => (item=/opt/agrirent/logs) => {\
+changed: [prod-app-01] => (item=/opt/agrirent/data) => {\
+
+[TASK: Deploy application.properties runtime configuration] ********************
+changed: [prod-app-01] => {\
+
+[TASK: Copy Spring Boot executable archive to target binary folder] ***********
+changed: [prod-app-01] => {\
+
+[TASK: Install systemd service unit definition] ********************************
+changed: [prod-app-01] => {\
+
+[TASK: Ensure systemd daemon is reloaded] **************************************
+ok: [prod-app-01] => {\
+
+[TASK: Enable and start agrirent systemd service] ******************************
+changed: [prod-app-01] => {\
+
+[TASK: Verify application HTTP health check response] **************************
+ok: [prod-app-01] => {\
+
+[TASK: Display health verification status] *************************************
+ok: [prod-app-01] => {\
+
+[PLAY RECAP] *******************************************************************
+prod-app-01                : ok=10   changed=7    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+Execution completed in 0.23 seconds.

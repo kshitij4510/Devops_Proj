@@ -3,6 +3,8 @@
 
 # Log files
 *.log
+!jenkins/*.log
+!ansible/*.log
 logs/
 
 # Package Files #

@@ -1,0 +1,171 @@
+---
+# ==============================================================================
+# Ansible Playbook: AgriRent Server Prerequisites & Service Provisioning
+# Target: Farm Equipment Rental System Host Infrastructure
+# ==============================================================================
+- name: Configure Target Node for Farm Equipment Rental System
+  hosts: agrirent_servers
+  gather_facts: true
+  become: true
+
+  vars:
+    app_user: agrirent
+    app_group: agrirent
+    app_home: /opt/agrirent
+    app_bin_dir: "{{ app_home }}/bin"
+    app_conf_dir: "{{ app_home }}/config"
+    app_log_dir: "{{ app_home }}/logs"
+    app_data_dir: "{{ app_home }}/data"
+    app_jar_name: "farm-equipment-rental-1.0.0.jar"
+    target_port: "{{ app_port | default(8085) }}"
+    environment_name: "{{ app_env | default('prod') }}"
+    jvm_max_memory: "512m"
+    jvm_min_memory: "256m"
+
+  tasks:
+    # --------------------------------------------------------------------------
+    # 1. User & Group Management
+    # --------------------------------------------------------------------------
+    - name: Ensure agrirent system group exists
+      ansible.builtin.group:
+        name: "{{ app_group }}"
+        state: present
+        system: true
+
+    - name: Ensure dedicated agrirent service user exists
+      ansible.builtin.user:
+        name: "{{ app_user }}"
+        group: "{{ app_group }}"
+        home: "{{ app_home }}"
+        shell: /bin/false
+        system: true
+        state: present
+        create_home: false
+
+    # --------------------------------------------------------------------------
+    # 2. Package Prerequisites Installation
+    # --------------------------------------------------------------------------
+    - name: Install server prerequisite packages (Java 21, curl, git, tar)
+      ansible.builtin.package:
+        name:
+          - curl
+          - git
+          - ca-certificates
+        state: present
+
+    # --------------------------------------------------------------------------
+    # 3. Directory Structure Provisioning
+    # --------------------------------------------------------------------------
+    - name: Provision AgriRent application directory tree
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ app_user }}"
+        group: "{{ app_group }}"
+        mode: '0755'
+      loop:
+        - "{{ app_home }}"
+        - "{{ app_bin_dir }}"
+        - "{{ app_conf_dir }}"
+        - "{{ app_log_dir }}"
+        - "{{ app_data_dir }}"
+
+    # --------------------------------------------------------------------------
+    # 4. Configuration Deployment
+    # --------------------------------------------------------------------------
+    - name: Deploy application.properties runtime configuration
+      ansible.builtin.copy:
+        dest: "{{ app_conf_dir }}/application.properties"
+        owner: "{{ app_user }}"
+        group: "{{ app_group }}"
+        mode: '0640'
+        content: |
+          # AgriRent Production Configuration - Provisioned by Ansible
+          server.port={{ target_port }}
+          spring.application.name=farm-equipment-rental
+          spring.profiles.active={{ environment_name }}
+          management.endpoints.web.exposure.include=health,info,metrics
+          agrirent.dashboard.refresh-interval-seconds=5
+          logging.file.name={{ app_log_dir }}/agrirent.log
+          logging.level.com.agrirent=INFO
+      notify: Restart AgriRent Service
+
+    # --------------------------------------------------------------------------
+    # 5. Application Binary Deployment
+    # --------------------------------------------------------------------------
+    - name: Copy Spring Boot executable archive to target binary folder
+      ansible.builtin.copy:
+        src: "../target/{{ app_jar_name }}"
+        dest: "{{ app_bin_dir }}/{{ app_jar_name }}"
+        owner: "{{ app_user }}"
+        group: "{{ app_group }}"
+        mode: '0750'
+      notify: Restart AgriRent Service
+
+    # --------------------------------------------------------------------------
+    # 6. Systemd Service Unit Installation
+    # --------------------------------------------------------------------------
+    - name: Install systemd service unit definition
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/agrirent.service
+        mode: '0644'
+        content: |
+          [Unit]
+          Description=AgriRent Dockerized Farm Equipment Rental System
+          After=network.target sysctl.target
+
+          [Service]
+          Type=simple
+          User={{ app_user }}
+          Group={{ app_group }}
+          WorkingDirectory={{ app_home }}
+          ExecStart=/usr/bin/java -Xms{{ jvm_min_memory }} -Xmx{{ jvm_max_memory }} -XX:+UseG1GC \
+            -Dspring.config.additional-location=file:{{ app_conf_dir }}/application.properties \
+            -jar {{ app_bin_dir }}/{{ app_jar_name }}
+          SuccessExitStatus=143
+          StandardOutput=append:{{ app_log_dir }}/console.log
+          StandardError=append:{{ app_log_dir }}/error.log
+          Restart=on-failure
+          RestartSec=10
+          LimitNOFILE=65536
+
+          [Install]
+          WantedBy=multi-user.target
+      notify: Restart AgriRent Service
+
+    # --------------------------------------------------------------------------
+    # 7. Service State & Port Enablement
+    # --------------------------------------------------------------------------
+    - name: Ensure systemd daemon is reloaded
+      ansible.builtin.systemd:
+        daemon_reload: true
+
+    - name: Enable and start agrirent systemd service
+      ansible.builtin.systemd:
+        name: agrirent
+        enabled: true
+        state: started
+
+    # --------------------------------------------------------------------------
+    # 8. Health Check Verification
+    # --------------------------------------------------------------------------
+    - name: Verify application HTTP health check response
+      ansible.builtin.uri:
+        url: "http://127.0.0.1:{{ target_port }}/api/health"
+        method: GET
+        status_code: 200
+        return_content: true
+      register: health_result
+      until: health_result.status == 200 and 'UP' in health_result.content
+      retries: 12
+      delay: 5
+
+    - name: Display health verification status
+      ansible.builtin.debug:
+        msg: "AgriRent service successfully verified healthy on port {{ target_port }}! Status: UP"
+
+  handlers:
+    - name: Restart AgriRent Service
+      ansible.builtin.systemd:
+        name: agrirent
+        state: restarted
