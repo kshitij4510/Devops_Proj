@@ -10,6 +10,8 @@ pipeline {
         JAVA_HOME = 'C:\\Program Files\\Java\\jdk-21.0.12'
         M2_HOME = 'C:\\DevTools\\apache-maven-3.9.16'
         PATH = "${M2_HOME}\\bin;${JAVA_HOME}\\bin;${env.PATH}"
+        JENKINS_NODE_COOKIE = 'dontKillMe'
+        BUILD_ID = 'dontKillMe'
     }
 
     stages {
@@ -68,8 +70,9 @@ pipeline {
 
                     Write-Host "Launching Farm Equipment Rental System executable JAR on port $port with profile $profile..."
                     $jarPath = (Get-Item "target\\farm-equipment-rental-1.0.0.jar").FullName
-                    $proc = Start-Process -FilePath "C:\\Program Files\\Java\\jdk-21.0.12\\bin\\java.exe" -ArgumentList "-jar", "`"$jarPath`"", "--server.port=$port", "--spring.profiles.active=$profile" -PassThru
-                    Write-Host "Launched background process PID: $($proc.Id)"
+                    $cmd = "`"C:\\Program Files\\Java\\jdk-21.0.12\\bin\\java.exe`" -jar `"$jarPath`" --server.port=$port --spring.profiles.active=$profile"
+                    $procRes = Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{ CommandLine = $cmd }
+                    Write-Host "Launched detached process PID: $($procRes.ProcessId) ReturnValue: $($procRes.ReturnValue)"
 
                     Write-Host "Validating deployment liveness via /api/health..."
                     $maxRetries = 15
