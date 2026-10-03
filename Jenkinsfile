@@ -27,14 +27,14 @@ pipeline {
         stage('Build & Compile') {
             steps {
                 echo '=== Stage 2: Compiling Java 21 Source with Maven ==='
-                bat 'call mvn clean compile'
+                bat 'call "%M2_HOME%\\bin\\mvn.cmd" clean compile'
             }
         }
 
         stage('Automated Tests & Quality Gate') {
             steps {
                 echo '=== Stage 3: Executing Unit & Integration Tests ==='
-                bat 'call mvn test "-Dtest=EquipmentServiceTest,RentalWorkflowServiceTest"'
+                bat 'call "%M2_HOME%\\bin\\mvn.cmd" test "-Dtest=EquipmentServiceTest,RentalWorkflowServiceTest"'
             }
             post {
                 always {
@@ -46,7 +46,7 @@ pipeline {
         stage('Package Artifact') {
             steps {
                 echo '=== Stage 4: Packaging Executable JAR Artifact ==='
-                bat 'call mvn package -DskipTests=true'
+                bat 'call "%M2_HOME%\\bin\\mvn.cmd" package -DskipTests=true'
                 archiveArtifacts artifacts: 'target/*.jar', fingerprint: true, allowEmptyArchive: false
             }
         }
@@ -56,6 +56,7 @@ pipeline {
                 echo "=== Stage 5: Deploying Farm Equipment Rental App on Port ${params.DEPLOY_PORT} ==="
                 powershell '''
                     $port = [int]$env:DEPLOY_PORT
+                    $profile = "$env:APP_PROFILE"
                     Write-Host "Verifying existing process on port $port..."
                     $conn = Get-NetTCPConnection -LocalPort $port -ErrorAction SilentlyContinue
                     if ($conn) {
@@ -65,9 +66,9 @@ pipeline {
                         Start-Sleep -Seconds 2
                     }
 
-                    Write-Host "Launching Farm Equipment Rental System executable JAR on port $port..."
+                    Write-Host "Launching Farm Equipment Rental System executable JAR on port $port with profile $profile..."
                     $jarPath = (Get-Item "target\\farm-equipment-rental-1.0.0.jar").FullName
-                    $proc = Start-Process -FilePath "java" -ArgumentList "-jar", "`"$jarPath`"", "--server.port=$port" -PassThru
+                    $proc = Start-Process -FilePath "C:\\Program Files\\Java\\jdk-21.0.12\\bin\\java.exe" -ArgumentList "-jar", "`"$jarPath`"", "--server.port=$port", "--spring.profiles.active=$profile" -PassThru
                     Write-Host "Launched background process PID: $($proc.Id)"
 
                     Write-Host "Validating deployment liveness via /api/health..."
