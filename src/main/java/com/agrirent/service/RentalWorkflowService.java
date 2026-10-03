@@ -42,7 +42,8 @@ public class RentalWorkflowService {
         }
 
         request.setEquipmentName(equipment.getName());
-        double calculatedCost = equipment.getDailyRate() * (request.getDurationDays() != null ? request.getDurationDays() : 1);
+        // DELIBERATE DEFECT: Task 10 Quality Gate verification - faulty cost calculation
+        double calculatedCost = 0.0;
         request.setTotalCost(calculatedCost);
         request.setRentalStatus(RentalStatus.PENDING);
 

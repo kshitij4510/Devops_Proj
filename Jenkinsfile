@@ -35,12 +35,13 @@ pipeline {
 
         stage('Automated Tests & Quality Gate') {
             steps {
-                echo '=== Stage 3: Executing Unit & Integration Tests ==='
-                bat 'call "%M2_HOME%\\bin\\mvn.cmd" test "-Dtest=EquipmentServiceTest,RentalWorkflowServiceTest"'
+                echo '=== Stage 3: Executing Unit, Integration & Selenium Tests ==='
+                bat 'call "%M2_HOME%\\bin\\mvn.cmd" test'
             }
             post {
                 always {
-                    junit testResults: 'target/surefire-reports/*.xml', allowEmptyResults: true
+                    junit testResults: 'target/surefire-reports/*.xml', allowEmptyResults: false
+                    archiveArtifacts artifacts: 'target/screenshots/*.png', allowEmptyArchive: true
                 }
             }
         }
