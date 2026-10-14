@@ -24,7 +24,7 @@ git config user.email "kshitijparab45@gmail.com"
 ```
 
 ### 2.2 Remote Target Configuration
-- **Repository URL:** `https://github.com/kshitijparab45/farm-equipment-rental-devops.git`
+- **Repository URL:** `https://github.com/kshitij4510/Devops_Proj.git`
 - **Default Upstream Branch:** `main`
 - **Development Integration Branch:** `develop`
 

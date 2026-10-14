@@ -7,7 +7,7 @@
 [![CI/CD Jenkins](https://img.shields.io/badge/CI%2FCD-Jenkins%20Pipeline%20as%20Code-D33833.svg)](https://www.jenkins.io/)
 [![Selenium WebDriver](https://img.shields.io/badge/Testing-Selenium%20WebDriver%204.25-43B02A.svg)](https://www.selenium.dev/)
 [![IaC Ansible](https://img.shields.io/badge/IaC-Ansible%20%26%20Puppet-EE0000.svg)](https://www.ansible.com/)
-[![Status](https://img.shields.io/badge/Release-v1.0.0--mvp-success.svg)](https://github.com/)
+[![Status](https://img.shields.io/badge/Release-v1.0.0--mvp-success.svg)](https://github.com/kshitij4510/Devops_Proj)
 
 An enterprise-grade, DevOps-automated, containerized agricultural machinery rental system designed to connect smallholder farmers with equipment owners, optimize machinery utilization, and automate the entire rental reservation lifecycle.
 
