@@ -20,6 +20,7 @@ RUN apk add --no-cache curl ca-certificates
 COPY pom.xml .
 COPY .mvn .mvn
 COPY mvnw* .
+RUN sed -i 's/\r$//' mvnw && chmod +x mvnw
 
 # Pre-fetch dependencies to leverage Docker layer caching
 RUN ./mvnw dependency:go-offline -B || true

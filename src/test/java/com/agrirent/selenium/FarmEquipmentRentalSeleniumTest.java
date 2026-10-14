@@ -240,7 +240,7 @@ public class FarmEquipmentRentalSeleniumTest {
     @Test
     @Order(4)
     @DisplayName("UJ4: Role-Based Workflow Transitions (Approve -> In-Use -> Completed)")
-    public void testUserJourney4_RoleBasedWorkflow() {
+    public void testUserJourney4_RoleBasedWorkflow() throws Exception {
         try {
             driver.get(baseUrl);
 
@@ -250,45 +250,43 @@ public class FarmEquipmentRentalSeleniumTest {
 
             // Open Rentals Tab
             driver.findElement(By.id("tab-rentals")).click();
-            wait.until(ExpectedConditions.presenceOfElementLocated(By.id("rentals-tbody")));
+            Thread.sleep(1000);
 
             // Locate first Approve button for PENDING rental
-            List<WebElement> approveButtons = driver.findElements(By.xpath("//button[contains(@id,'btn-approve-')]"));
-            if (!approveButtons.isEmpty()) {
-                WebElement approveBtn = approveButtons.get(0);
-                String btnId = approveBtn.getAttribute("id");
-                String rentalId = btnId.replace("btn-approve-", "");
-                approveBtn.click();
+            WebElement approveBtn = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(@id,'btn-approve-')]")));
+            String btnId = approveBtn.getAttribute("id");
+            String rentalId = btnId.replace("btn-approve-", "");
+            approveBtn.click();
 
-                // Wait for status pill to become APPROVED
-                wait.until(ExpectedConditions.textToBePresentInElementLocated(
-                        By.id("rental-row-" + rentalId), "APPROVED"));
+            // Wait for status pill to become APPROVED
+            wait.until(ExpectedConditions.textToBePresentInElementLocated(
+                    By.id("rental-row-" + rentalId), "APPROVED"));
 
-                // Switch role to ADMIN to dispatch machinery
-                roleSelect = new Select(driver.findElement(By.id("role-select")));
-                roleSelect.selectByValue("ADMIN");
+            // Switch role to ADMIN to dispatch machinery
+            roleSelect = new Select(driver.findElement(By.id("role-select")));
+            roleSelect.selectByValue("ADMIN");
+            Thread.sleep(600);
 
-                // Locate Dispatch button
-                WebElement dispatchBtn = wait.until(ExpectedConditions.elementToBeClickable(By.id("btn-dispatch-" + rentalId)));
-                dispatchBtn.click();
+            // Locate Dispatch button
+            WebElement dispatchBtn = wait.until(ExpectedConditions.elementToBeClickable(By.id("btn-dispatch-" + rentalId)));
+            dispatchBtn.click();
 
-                // Wait for status pill to transition to IN_USE
-                wait.until(ExpectedConditions.textToBePresentInElementLocated(
-                        By.id("rental-row-" + rentalId), "IN_USE"));
+            // Wait for status pill to transition to IN_USE
+            wait.until(ExpectedConditions.textToBePresentInElementLocated(
+                    By.id("rental-row-" + rentalId), "IN_USE"));
 
-                // Locate Confirm Return button
-                WebElement returnBtn = wait.until(ExpectedConditions.elementToBeClickable(By.id("btn-return-" + rentalId)));
-                returnBtn.click();
+            // Locate Confirm Return button
+            WebElement returnBtn = wait.until(ExpectedConditions.elementToBeClickable(By.id("btn-return-" + rentalId)));
+            returnBtn.click();
 
-                // Wait for status pill to transition to COMPLETED
-                wait.until(ExpectedConditions.textToBePresentInElementLocated(
-                        By.id("rental-row-" + rentalId), "COMPLETED"));
+            // Wait for status pill to transition to COMPLETED
+            wait.until(ExpectedConditions.textToBePresentInElementLocated(
+                    By.id("rental-row-" + rentalId), "COMPLETED"));
 
-                // Check Dashboard KPIs
-                driver.findElement(By.id("tab-equipment")).click();
-                WebElement revenueKpi = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("stat-total-revenue")));
-                assertFalse(revenueKpi.getText().equals("₹0"), "Accumulated revenue must be greater than zero after completed rental");
-            }
+            // Check Dashboard KPIs
+            driver.findElement(By.id("tab-equipment")).click();
+            WebElement revenueKpi = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("stat-total-revenue")));
+            assertFalse(revenueKpi.getText().equals("₹0"), "Accumulated revenue must be greater than zero after completed rental");
 
             takeScreenshot("UJ4_Workflow_Transitions_Success");
         } catch (Throwable t) {
