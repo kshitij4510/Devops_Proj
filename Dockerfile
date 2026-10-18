@@ -65,7 +65,7 @@ ENV SPRING_PROFILES_ACTIVE=prod \
 
 # Container Healthcheck probe
 HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
-  CMD curl -f http://localhost:${SERVER_PORT}/api/health || exit 1
+  CMD sh -c 'curl -f http://localhost:${PORT:-$SERVER_PORT}/api/health || exit 1'
 
 # Launch Entrypoint with signal forwarding
-ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar app.jar --server.port=${SERVER_PORT}"]
+ENTRYPOINT ["sh", "-c", "PORT=${PORT:-$SERVER_PORT}; exec java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar app.jar --server.port=$PORT"]
